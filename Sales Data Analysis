@@ -1,0 +1,45 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the sales dataset
+sales_data = pd.read_csv("ECOMM DATA.csv")
+
+# Data cleaning and preprocessing
+# Remove unnecessary columns
+sales_data = sales_data.drop(columns=["Row ID", "Order ID", "Ship Date", "Ship Mode", "Customer ID", "Customer Name", 
+                                       "Segment", "City", "State", "Country", "Postal Code", "Market", "Region", 
+                                       "Product ID", "Category", "Sub-Category", "Shipping Cost", "Order Priority"])
+
+# Convert Order Date to datetime format
+sales_data["Order Date"] = pd.to_datetime(sales_data["Order Date"])
+
+# Compute total sales
+total_sales = sales_data["Sales"].sum()
+
+# Analyze sales trends over time
+sales_trend = sales_data.groupby("Order Date")["Sales"].sum().reset_index()
+
+# Determine the best-selling products
+best_selling_products = sales_data.groupby("Product Name")["Sales"].sum().reset_index().nlargest(10, "Sales")
+
+# Visualizations
+# Sales trend over time
+plt.figure(figsize=(10, 6))
+plt.plot(sales_trend["Order Date"], sales_trend["Sales"])
+plt.title("Sales Trend Over Time")
+plt.xlabel("Order Date")
+plt.ylabel("Total Sales")
+plt.grid(True)
+plt.show()
+
+# Bar plot for best-selling products
+plt.figure(figsize=(10, 6))
+plt.barh(best_selling_products["Product Name"], best_selling_products["Sales"])
+plt.title("Top 10 Best-Selling Products")
+plt.xlabel("Total Sales")
+plt.ylabel("Product Name")
+plt.gca().invert_yaxis()
+plt.show()
+
+# Summary output
+print("Total Sales:", total_sales)
